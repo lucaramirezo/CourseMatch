@@ -75,4 +75,3 @@ Este proyecto está bajo la licencia MIT. Consulta el archivo [LICENSE](LICENSE)
 
 Para cualquier pregunta o sugerencia, puedes contactar a:
 - Luca Ramirez(https://github.com/lucaramirezo)
-```
