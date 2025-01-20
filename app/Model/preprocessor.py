@@ -4,7 +4,7 @@ import pandas as pd
 from sentence_transformers import SentenceTransformer
 
 # Crear las carpetas necesarias
-os.makedirs('data/processed', exist_ok=True)
+os.makedirs('../data/processed', exist_ok=True)
 
 # Cargar y procesar
 def load_and_preprocess_data(file_path):
@@ -21,8 +21,8 @@ def load_and_preprocess_data(file_path):
     )
 
     # Guardar el archivo
-    joblib.dump(courses_data, 'data/processed/courses_data.pkl')
+    joblib.dump(courses_data, '../data/processed/courses_data.pkl')
     return courses_data, model
 
 # Ejecutar el preprocesamiento
-load_and_preprocess_data('data/courses_cleaned_dataset.csv')
+load_and_preprocess_data('../data/courses_cleaned_dataset.csv')
