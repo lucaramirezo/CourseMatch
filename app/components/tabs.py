@@ -150,15 +150,13 @@ def render_trends_tab(trends_2024, roles_2024, learning_methods_2024, courses_da
 
     st.markdown("---")
 
+    # Relación entre Roles y Lenguajes Clave
     st.subheader("👩‍💻 Relación entre Roles y Lenguajes Clave")
-    # Limpiar y agrupar roles
     grouped_roles = group_roles_by_language(roles_2024)
     grouped_roles = clean_roles_dataframe(grouped_roles)
 
-
-
     if view_option == "Gráficos":
-        # Visualización
+        # Selección de tipo de gráfico
         chart_option = st.radio(
             "Selecciona el tipo de visualización:",
             options=["Barras Apiladas", "Matriz de Burbujas", "Gráfico de Dispersión"]
@@ -190,7 +188,7 @@ def render_trends_tab(trends_2024, roles_2024, learning_methods_2024, courses_da
             st.warning(f"No se encontraron cursos relacionados con el rol completo: **{selected_role}**.")
             st.info("Intentando una búsqueda palabra por palabra...")
 
-            # Búsqueda por palabras clave
+            # Búsqueda palabra por palabra
             keywords = selected_role.split()
             partial_recommendations = []
             found_keywords = []
@@ -228,12 +226,13 @@ def render_trends_tab(trends_2024, roles_2024, learning_methods_2024, courses_da
 
     st.markdown("---")
 
-    # Gráfico: Popularidad vs Crecimiento de Lenguajes
+    # Popularidad vs Crecimiento de Lenguajes
     st.subheader("🔍 Popularidad vs Crecimiento de Lenguajes")
     if view_option == "Gráficos":
         st.altair_chart(plot_language_popularity_vs_growth(trends_2024), use_container_width=True)
     else:
         st.table(format_dataframe_with_ranking(trends_2024, ['Language', 'Frequency_Used', 'Growth'], maintain_order=True))
+
 
 
 def format_dataframe_with_ranking(df, columns, top_n=10, ascending=True, maintain_order=False):
