@@ -4,3 +4,5 @@ sentence-transformers
 streamlit~=1.37.1
 streamlit-option-menu
 joblib~=1.4.2
+altair~=5.0.1
+requests~=2.32.3
