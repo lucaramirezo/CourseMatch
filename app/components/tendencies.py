@@ -44,8 +44,13 @@ def calculate_language_trends(data, year):
     :return: DataFrame con tendencias de lenguajes.
     """
     def count_language_frequencies(data, column):
-        filtered_data = data[column].dropna().str.split(";").explode()
-        return filtered_data.value_counts().reset_index().rename(columns={"index": "Language", 0: "Frequency"})
+        filtered_data = data[data["Year"] == year][column].dropna()
+        # Separar lenguajes en listas individuales
+        languages = filtered_data.str.split(";").explode()
+        # Contar frecuencias
+        result = languages.value_counts().reset_index()
+        result.columns = ["Language", "Frequency"]  # Renombrar columnas explícitamente
+        return result
 
     usage = count_language_frequencies(data[data["Year"] == year], "LanguageHaveWorkedWith")
     desired = count_language_frequencies(data[data["Year"] == year], "LanguageWantToWorkWith")
