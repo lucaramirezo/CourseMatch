@@ -1,10 +1,3 @@
-Aquí tienes una integración más refinada de la sección de encuestas en tu README, asegurándonos de incluir toda la información necesaria para descargar e integrar los datos en tu proyecto.
-
----
-
-### **Actualización del README**
-
-```markdown
 # CourseMatch
 
 **CourseMatch** es una herramienta de recomendación de cursos en línea desarrollada en [Streamlit](https://streamlit.io/). Utiliza inteligencia artificial y modelos avanzados de procesamiento de lenguaje natural (NLP) para ayudarte a encontrar cursos relevantes de plataformas como Coursera, Udacity, edX y más.
