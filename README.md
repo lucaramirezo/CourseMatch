@@ -10,7 +10,8 @@ Además, incluye una sección de **Tendencias Tecnológicas**, donde puedes expl
 - ⚙️ **Filtros avanzados**: Ajusta el nivel del curso, calificaciones, popularidad, y más.
 - 📚 **Recomendaciones relevantes**: Clasificación de cursos según tu interés y datos de popularidad.
 - 📊 **Tendencias Tecnológicas**: Explora los lenguajes en auge, roles emergentes, y métodos de aprendizaje más utilizados.
-- 🎯 **Interfaz amigable**: Barra de navegación para alternar entre el recomendador de cursos y las tendencias.
+- 🎓 **Cómo Aprende la Gente Hoy en Día**: Descubre los métodos de aprendizaje más populares (en línea y presenciales) y compara tendencias educativas.
+- 🎯 **Interfaz amigable**: Barra de navegación para alternar entre el recomendador de cursos, tendencias y aprendizaje.
 
 ## 🛠️ Instalación y Configuración
 
