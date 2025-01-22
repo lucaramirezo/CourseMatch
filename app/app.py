@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-from components.tabs import render_courses_tab, render_trends_tab
+from components.tabs import render_courses_tab, render_trends_tab, render_learning_tab
 from components.tendencies import (
     load_and_consolidate_surveys,
     calculate_language_trends,
@@ -33,15 +33,18 @@ trends_2024, roles_2024, learning_methods_2024 = load_trends()
 # Barra de navegación superior con streamlit-option-menu
 selected_tab = option_menu(
     menu_title=None,  # Oculta el título
-    options=["Recomendador de Cursos", "Tendencias Tecnológicas"],
-    icons=["book", "graph-up-arrow"],  # Iconos de FontAwesome
+    options=["Recomendador de Cursos", "Tendencias Tecnológicas", "Cómo Aprende la Gente"],
+    icons=["book", "graph-up-arrow", "people"],  # Iconos de FontAwesome
     menu_icon="cast",  # Icono del menú
     default_index=0,  # Tab predeterminado
     orientation="horizontal"
 )
+
 
 # Renderizar el tab seleccionado
 if selected_tab == "Recomendador de Cursos":
     render_courses_tab(courses_data, model, recommend_courses_with_embeddings)
 elif selected_tab == "Tendencias Tecnológicas":
     render_trends_tab(trends_2024, roles_2024, learning_methods_2024, courses_data, model, recommend_courses_with_embeddings)
+elif selected_tab == "Cómo Aprende la Gente":
+    render_learning_tab(learning_methods_2024)

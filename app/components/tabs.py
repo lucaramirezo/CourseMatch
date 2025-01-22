@@ -4,7 +4,7 @@ from .visualizations import (
     plot_language_trends,
     plot_learning_methods,
     plot_language_popularity_vs_growth, plot_role_language_scatter, plot_role_language_bubble,
-    plot_role_language_stacked_bar
+    plot_role_language_stacked_bar, plot_learning_methods_comparison
 )
 
 
@@ -117,122 +117,139 @@ def render_trends_tab(trends_2024, roles_2024, learning_methods_2024, courses_da
     )
 
     # Lenguajes en Auge y Declive
-    st.subheader("📈 Lenguajes en Auge y Declive")
-    if view_option == "Gráficos":
-        st.altair_chart(plot_language_trends(trends_2024), use_container_width=True)
-    else:
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown("### Lenguajes en Auge")
-            st.table(format_dataframe_with_ranking(trends_2024, ['Language', 'Growth'], top_n=5, ascending=False))
-        with col2:
-            st.markdown("### Lenguajes en Declive")
-            st.table(format_dataframe_with_ranking(trends_2024, ['Language', 'Growth'], top_n=5, ascending=True))
-
-    # Conexión con el recomendador: Selección de lenguaje
-    st.subheader("🔍 Busca cursos relacionados con un lenguaje")
-    selected_language = st.selectbox(
-        "Selecciona un lenguaje:",
-        options=trends_2024['Language'].unique()
-    )
-    if st.button("Buscar cursos relacionados con este lenguaje"):
-        recommendations = recommend_courses_function(
-            courses_data=courses_data,
-            model=model,
-            keyword=selected_language,
-            top_n=5
-        )
-        if isinstance(recommendations, str):
-            st.warning("No se encontraron cursos relacionados.")
+    with st.expander("📈 Lenguajes en Auge y Declive"):
+        if view_option == "Gráficos":
+            st.altair_chart(plot_language_trends(trends_2024), use_container_width=True)
         else:
-            st.markdown(f"### 📚 Cursos relacionados con **{selected_language}**:")
-            st.dataframe(recommendations.reset_index(drop=True))
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown("### Lenguajes en Auge")
+                top_languages = format_dataframe_with_ranking(trends_2024, ['Language', 'Growth'], top_n=5,
+                                                              ascending=False)
+                st.table(top_languages)
 
-    st.markdown("---")
+                # Botones para buscar cursos por lenguaje en auge
+                st.markdown("#### Cursos Recomendados:")
+                for _, row in top_languages.iterrows():
+                    if st.button(f"Buscar cursos de {row['Language']}"):
+                        recommendations = recommend_courses_function(
+                            courses_data=courses_data,
+                            model=model,
+                            keyword=row['Language'],
+                            top_n=5
+                        )
+                        if isinstance(recommendations, str):
+                            st.warning(f"No se encontraron cursos relacionados con **{row['Language']}**.")
+                        else:
+                            st.markdown(f"### 📚 Cursos relacionados con **{row['Language']}**:")
+                            st.dataframe(recommendations.reset_index(drop=True))
+
+            with col2:
+                st.markdown("### Lenguajes en Declive")
+                st.table(format_dataframe_with_ranking(trends_2024, ['Language', 'Growth'], top_n=5, ascending=True))
 
     # Relación entre Roles y Lenguajes Clave
-    st.subheader("👩‍💻 Relación entre Roles y Lenguajes Clave")
-    grouped_roles = group_roles_by_language(roles_2024)
-    grouped_roles = clean_roles_dataframe(grouped_roles)
+    with st.expander("👩‍💻 Relación entre Roles y Lenguajes Clave"):
+        grouped_roles = group_roles_by_language(roles_2024)
+        grouped_roles = clean_roles_dataframe(grouped_roles)
 
-    if view_option == "Gráficos":
-        # Selección de tipo de gráfico
-        chart_option = st.radio(
-            "Selecciona el tipo de visualización:",
-            options=["Barras Apiladas", "Matriz de Burbujas", "Gráfico de Dispersión"]
-        )
-        if chart_option == "Barras Apiladas":
-            st.altair_chart(plot_role_language_stacked_bar(grouped_roles), use_container_width=True)
-        elif chart_option == "Matriz de Burbujas":
-            st.altair_chart(plot_role_language_bubble(grouped_roles), use_container_width=True)
-        elif chart_option == "Gráfico de Dispersión":
-            st.altair_chart(plot_role_language_scatter(grouped_roles), use_container_width=True)
-    else:
-        st.markdown("### Tabla de Roles y Lenguajes (Top 10)")
-        st.dataframe(grouped_roles)
-
-    # Conexión con el recomendador: Selección de rol
-    st.subheader("🔍 Busca cursos relacionados con un rol")
-    selected_role = st.selectbox(
-        "Selecciona un rol:",
-        options=roles_2024['DevType'].unique()
-    )
-    if st.button(f"Buscar cursos relacionados con el rol **{selected_role}**"):
-        recommendations = recommend_courses_function(
-            courses_data=courses_data,
-            model=model,
-            keyword=selected_role,
-            top_n=5
-        )
-        if isinstance(recommendations, str):
-            st.warning(f"No se encontraron cursos relacionados con el rol completo: **{selected_role}**.")
-            st.info("Intentando una búsqueda palabra por palabra...")
-
-            # Búsqueda palabra por palabra
-            keywords = selected_role.split()
-            partial_recommendations = []
-            found_keywords = []
-
-            for word in keywords:
-                partial_results = recommend_courses_function(
-                    courses_data=courses_data,
-                    model=model,
-                    keyword=word,
-                    top_n=3
-                )
-                if not isinstance(partial_results, str):
-                    partial_recommendations.append(partial_results)
-                    found_keywords.append(word)
-
-            if partial_recommendations:
-                combined_recommendations = pd.concat(partial_recommendations).drop_duplicates().reset_index(drop=True)
-                st.markdown(f"### 📚 Cursos relacionados con palabras clave del rol **{selected_role}**:")
-                st.write(f"Palabras clave utilizadas: {', '.join(found_keywords)}")
-                st.dataframe(combined_recommendations)
-            else:
-                st.error("No se encontraron cursos relacionados ni con palabras parciales del rol.")
+        if view_option == "Gráficos":
+            # Selección de tipo de gráfico
+            chart_option = st.radio(
+                "Selecciona el tipo de visualización:",
+                options=["Barras Apiladas", "Matriz de Burbujas", "Gráfico de Dispersión"]
+            )
+            if chart_option == "Barras Apiladas":
+                st.altair_chart(plot_role_language_stacked_bar(grouped_roles), use_container_width=True)
+            elif chart_option == "Matriz de Burbujas":
+                st.altair_chart(plot_role_language_bubble(grouped_roles), use_container_width=True)
+            elif chart_option == "Gráfico de Dispersión":
+                st.altair_chart(plot_role_language_scatter(grouped_roles), use_container_width=True)
         else:
-            st.markdown(f"### 📚 Cursos relacionados con el rol **{selected_role}**:")
-            st.dataframe(recommendations.reset_index(drop=True))
+            st.markdown("### Tabla de Roles y Lenguajes (Top 10)")
+            top_roles = grouped_roles.head(10)
+            st.dataframe(top_roles)
 
-    st.markdown("---")
+            # Botones para buscar cursos por rol
+            for _, row in top_roles.iterrows():
+                if st.button(f"Buscar cursos para el rol {row['DevType']}"):
+                    recommendations = recommend_courses_function(
+                        courses_data=courses_data,
+                        model=model,
+                        keyword=row['DevType'],
+                        top_n=5
+                    )
+                    if isinstance(recommendations, str):
+                        st.warning(f"No se encontraron cursos relacionados con el rol **{row['DevType']}**.")
+                    else:
+                        st.markdown(f"### 📚 Cursos relacionados con el rol **{row['DevType']}**:")
+                        st.dataframe(recommendations.reset_index(drop=True))
 
     # Métodos de Aprendizaje Más Populares
-    st.subheader("📘 Métodos de Aprendizaje Más Populares")
-    if view_option == "Gráficos":
-        st.altair_chart(plot_learning_methods(learning_methods_2024), use_container_width=True)
-    else:
-        st.table(format_dataframe_with_ranking(learning_methods_2024, ['Method', 'TotalFrequency'], maintain_order=True, top_n=10))
+    with st.expander("📘 Métodos de Aprendizaje Más Populares"):
+        if view_option == "Gráficos":
+            st.altair_chart(plot_learning_methods(learning_methods_2024), use_container_width=True)
+        else:
+            st.table(
+                format_dataframe_with_ranking(learning_methods_2024, ['Method', 'TotalFrequency'], maintain_order=True,
+                                              top_n=10))
+
+
+def render_learning_tab(learning_methods_2024):
+    """
+    Renderiza la sección 'Cómo Aprende la Gente Hoy en Día'.
+
+    :param learning_methods_2024: DataFrame con datos de métodos de aprendizaje.
+    """
+    st.title("📘 Cómo Aprende la Gente Hoy en Día")
+    st.markdown(
+        """
+        Esta sección explora las preferencias de aprendizaje actuales de la comunidad tecnológica, 
+        basándonos en las encuestas recientes de Stack Overflow.
+
+        Descubre:
+        - **Métodos de aprendizaje más populares** (en línea y presenciales).
+        - Comparativas entre enfoques educativos tradicionales y modernos.
+        """
+    )
 
     st.markdown("---")
 
-    # Popularidad vs Crecimiento de Lenguajes
-    st.subheader("🔍 Popularidad vs Crecimiento de Lenguajes")
-    if view_option == "Gráficos":
-        st.altair_chart(plot_language_popularity_vs_growth(trends_2024), use_container_width=True)
-    else:
-        st.table(format_dataframe_with_ranking(trends_2024, ['Language', 'Frequency_Used', 'Growth'], maintain_order=True))
+    # Visualización: Métodos Populares
+    st.subheader("📊 Métodos de Aprendizaje Más Populares")
+    col1, col2 = st.columns(2)
 
+    with col1:
+        st.markdown("### Métodos en Línea")
+        online_methods = learning_methods_2024[["Method", "OnlineFrequency"]].sort_values(
+            by="OnlineFrequency", ascending=False
+        ).head(5)
+        st.table(format_dataframe_with_ranking(online_methods, columns=['Method', 'OnlineFrequency'], maintain_order=True))
+
+    with col2:
+        st.markdown("### Métodos Presenciales")
+        # Filtrar métodos que no sean claramente presenciales
+        offline_methods = learning_methods_2024[
+            ~learning_methods_2024["Method"].str.contains("online", case=False)
+        ][["Method", "OfflineFrequency"]].sort_values(by="OfflineFrequency", ascending=False).head(5)
+        st.table(offline_methods)
+
+    # Comparación gráfica de métodos
+    st.markdown("---")
+    st.subheader("🔍 Comparativa de Métodos en Línea y Presenciales")
+    st.altair_chart(plot_learning_methods_comparison(learning_methods_2024), use_container_width=True)
+
+    # Insights adicionales
+    st.markdown("---")
+    st.subheader("📈 Insights Adicionales")
+    st.markdown(
+        """
+        - **Tendencia general**: Los métodos en línea dominan, pero los métodos presenciales aún son importantes 
+        para roles altamente especializados o colaborativos.
+        - **Preferencias modernas**: Bootcamps y plataformas de cursos masivos abiertos (MOOCs) son opciones populares 
+        entre desarrolladores jóvenes.
+        """
+    )
 
 
 def format_dataframe_with_ranking(df, columns, top_n=10, ascending=True, maintain_order=False):

@@ -42,6 +42,39 @@ def plot_learning_methods(methods_data):
     return chart
 
 
+import altair as alt
+
+def plot_learning_methods_comparison(learning_methods_2024):
+    """
+    Crea un gráfico de comparación de métodos de aprendizaje (en línea y fuera de línea).
+
+    :param learning_methods_2024: DataFrame con métodos de aprendizaje y sus frecuencias.
+    :return: Gráfico de Altair.
+    """
+    melted_df = learning_methods_2024.melt(
+        id_vars=["Method"],
+        value_vars=["OnlineFrequency", "OfflineFrequency"],
+        var_name="Type",
+        value_name="Frequency"
+    )
+    melted_df["Type"] = melted_df["Type"].replace({
+        "OnlineFrequency": "En Línea",
+        "OfflineFrequency": "Fuera de Línea"
+    })
+
+    chart = alt.Chart(melted_df).mark_bar().encode(
+        x=alt.X("Frequency:Q", title="Frecuencia"),
+        y=alt.Y("Method:N", sort="-x", title="Método de Aprendizaje"),
+        color=alt.Color("Type:N", legend=alt.Legend(title="Tipo")),
+        tooltip=["Method", "Type", "Frequency"]
+    ).properties(
+        title="Comparativa de Métodos de Aprendizaje",
+        width=800,
+        height=400
+    )
+    return chart
+
+
 def plot_role_language_scatter(roles_df):
     """
     Crea un gráfico de dispersión para mostrar roles y su relación con lenguajes clave.
