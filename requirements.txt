@@ -6,3 +6,5 @@ streamlit-option-menu
 joblib~=1.4.2
 altair~=5.0.1
 requests~=2.32.3
+zipfile
+os
