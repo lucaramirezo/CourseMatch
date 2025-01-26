@@ -5,5 +5,6 @@ app/data/surveys/survey_results_public_*.csv
 app/data/surveys/survey_results_public_2022.csv
 app/data/surveys/survey_results_public_2023.csv
 app/data/surveys/survey_results_public_2024.csv
+app/data/surveys/survey_results_*.csv
 
 __pycache__/
