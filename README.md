@@ -56,12 +56,12 @@ Alternativamente, puedes usar el script `download_stackoverflow_surveys.py` incl
 
 1. Instala la dependencia necesaria:
    ```bash
-   pip install requests
+   pip install -r requirements.txt
    ```
 
 2. Ejecuta el script para descargar y extraer los datos:
    ```bash
-   python download_stackoverflow_surveys.py
+   python setup_surveys.py
    ```
 
 3. Los datos se guardarán en el siguiente directorio:
